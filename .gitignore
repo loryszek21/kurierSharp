@@ -1,0 +1,10 @@
+bin/
+obj/
+*.db
+appsettings.json
+backend/.vs
+*.apk
+.idea/
+*.iml
+.gradle/
+
