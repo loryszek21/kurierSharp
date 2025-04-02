@@ -8,3 +8,4 @@ backend/.vs
 *.iml
 .gradle/
 
+database/postgres.env
