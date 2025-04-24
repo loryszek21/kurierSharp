@@ -12,6 +12,10 @@
 		public string PostalCode { get; set; }
 		public string Country { get; set; }
 
+		public User()
+		{
+		}
+
 		public User(int id, string name, string email, string phoneNumber, string address, string city, string region, string postalCode, string country)
 		{
 			Id = id;

@@ -19,6 +19,10 @@
 		public int? CourierId { get; set; }
 		public User? Courier { get; set; }
 
+		public Package()
+		{
+		}
+
 		public Package(int id, string trackingNumber, double weightKg, PackageStatus status, DateTime createdAt, DateTime? deliveredAt, int senderId, User sender, int recipientId, User recipient, int? courierId, User? courier)
 		{
 			Id = id;
