@@ -22,6 +22,34 @@ namespace backend.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("backend.Models.Address", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("City")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Street")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Addresses");
+                });
+
             modelBuilder.Entity("backend.Models.Package", b =>
                 {
                     b.Property<int>("Id")
@@ -29,6 +57,9 @@ namespace backend.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AddressId")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("CourierId")
                         .HasColumnType("integer");
@@ -52,10 +83,12 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double>("WeightKg")
+                    b.Property<double?>("WeightKg")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
 
                     b.HasIndex("CourierId");
 
@@ -64,18 +97,6 @@ namespace backend.Migrations
                     b.HasIndex("SenderId");
 
                     b.ToTable("Packages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 4, 24, 12, 0, 0, 0, DateTimeKind.Utc),
-                            RecipientId = 2,
-                            SenderId = 1,
-                            Status = 0,
-                            TrackingNumber = "TRK123456",
-                            WeightKg = 2.5
-                        });
                 });
 
             modelBuilder.Entity("backend.Models.User", b =>
@@ -86,17 +107,8 @@ namespace backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("AddressId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -110,68 +122,60 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Region")
+                    b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.HasIndex("AddressId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "ul. Kwiatowa 5",
-                            City = "Warszawa",
-                            Country = "Polska",
-                            Email = "jan@example.com",
-                            Name = "Jan Kowalski",
-                            PhoneNumber = "123456789",
-                            PostalCode = "00-001",
-                            Region = "Mazowieckie"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Address = "ul. Różana 7",
-                            City = "Kraków",
-                            Country = "Polska",
-                            Email = "anna@example.com",
-                            Name = "Anna Nowak",
-                            PhoneNumber = "987654321",
-                            PostalCode = "30-002",
-                            Region = "Małopolskie"
-                        });
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("backend.Models.Package", b =>
                 {
+                    b.HasOne("backend.Models.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("backend.Models.User", "Courier")
                         .WithMany()
-                        .HasForeignKey("CourierId");
+                        .HasForeignKey("CourierId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("backend.Models.User", "Recipient")
                         .WithMany()
                         .HasForeignKey("RecipientId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("backend.Models.User", "Sender")
                         .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Address");
 
                     b.Navigation("Courier");
 
                     b.Navigation("Recipient");
 
                     b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("backend.Models.User", b =>
+                {
+                    b.HasOne("backend.Models.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
                 });
 #pragma warning restore 612, 618
         }
