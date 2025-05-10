@@ -1,64 +1,63 @@
 ﻿namespace backend
 {
+	using backend.Data.Seed;
 	using backend.Models;
 	using Microsoft.EntityFrameworkCore;
-	using System;
 
 	public class AppDbContext : DbContext
 	{
-		public DbSet<User> Users { get; set; } 
-		public DbSet<Package> Packages { get; set; } 
-
+		public DbSet<User> Users { get; set; }
+		public DbSet<Address> Addresses { get; set; }
+		public DbSet<Package> Packages { get; set; }
 
 		public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
-			// Możesz tu konfigurować encje
-			modelBuilder.Entity<User>().HasData(
-	new User
-	{
-		Id = 1,
-		Name = "Jan Kowalski",
-		Email = "jan@example.com",
-		PhoneNumber = "123456789",
-		Address = "ul. Kwiatowa 5",
-		City = "Warszawa",
-		Region = "Mazowieckie",
-		PostalCode = "00-001",
-		Country = "Polska"
-	},
-	new User
-	{
-		Id = 2,
-		Name = "Anna Nowak",
-		Email = "anna@example.com",
-		PhoneNumber = "987654321",
-		Address = "ul. Różana 7",
-		City = "Kraków",
-		Region = "Małopolskie",
-		PostalCode = "30-002",
-		Country = "Polska"
-	}
-);
 
-			modelBuilder.Entity<Package>().HasData(
-				new Package
-				{
-					Id = 1,
-					TrackingNumber = "TRK123456",
-					WeightKg = 2.5,
-					Status = PackageStatus.Created,
-					CreatedAt = new DateTime(2024, 4, 24, 12, 0, 0, DateTimeKind.Utc),
-					SenderId = 1,
-					RecipientId = 2,
-					CourierId = null
-				}
-			);
-		}
+			modelBuilder.Entity<User>()
+			   .HasOne(u => u.Address)
+			   .WithMany()  // Address can be associated with many users
+			   .HasForeignKey("AddressId")
+			   .IsRequired()
+			   .OnDelete(DeleteBehavior.Cascade);  // Optional:  Cascade delete address if user is deleted
+
+			//Package - Address (One-to-One)
+			modelBuilder.Entity<Package>()
+			   .HasOne(p => p.Address)
+			   .WithMany() // Address can be associated with many packages
+			   .HasForeignKey("AddressId")
+			   .IsRequired()
+			   .OnDelete(DeleteBehavior.Cascade); // Optional: Cascade delete address if package is deleted
+
+			// Package - Sender (One-to-Many)
+			modelBuilder.Entity<Package>()
+				.HasOne(p => p.Sender)
+				.WithMany() // A User can send many packages
+				.HasForeignKey(p => p.SenderId)
+				.IsRequired()
+				.OnDelete(DeleteBehavior.NoAction); // Prevent cascade delete (sender deletion would delete packages)
+
+			// Package - Recipient (One-to-Many)
+			modelBuilder.Entity<Package>()
+				.HasOne(p => p.Recipient)
+				.WithMany() // A User can receive many packages
+				.HasForeignKey(p => p.RecipientId)
+				.IsRequired()
+				.OnDelete(DeleteBehavior.NoAction); // Prevent cascade delete (recipient deletion would delete packages)
+
+			// Package - Courier (One-to-Many) (Optional Courier)
+			modelBuilder.Entity<Package>()
+				.HasOne(p => p.Courier)
+				.WithMany() // A User can deliver many packages
+				.HasForeignKey(p => p.CourierId)
+				.IsRequired(false) // Courier is optional
+				.OnDelete(DeleteBehavior.SetNull); 
+		// // Seeding
+		// AddressSeed.Seed(modelBuilder);
+		// UserSeed.Seed(modelBuilder);
+		// PackageSeed.Seed(modelBuilder);
+	}
 	}
 }
-
-
-
