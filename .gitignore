@@ -9,3 +9,7 @@ backend/.vs
 .gradle/
 
 database/postgres.env
+.vs/backend/DesignTimeBuild/.dtbcache.v2
+.vs
+.vscode/
+
