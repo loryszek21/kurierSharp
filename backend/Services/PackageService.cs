@@ -14,7 +14,13 @@ namespace backend.Services
 
 		public async Task<IEnumerable<Package>> GetAllPackagesAsync()
 		{
-			return await _context.Packages.ToListAsync();
+			//return await _context.Packages.ToListAsync();
+			return await _context.Packages
+	.Include(p => p.Sender)
+	.Include(p => p.Recipient)
+	.Include(p => p.Courier)
+	.Include(p => p.Address)
+	.ToListAsync();
 		}
 	}
 }
