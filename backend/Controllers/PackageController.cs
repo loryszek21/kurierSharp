@@ -1,5 +1,7 @@
-﻿using backend.Models;
+﻿using backend.DTOs;
+using backend.Models;
 using backend.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
@@ -16,7 +18,7 @@ namespace backend.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Package>>> GetPackage()
+		public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackage()
 		{
 			var packages = await _packageService.GetAllPackagesAsync();
 			return Ok(packages);
@@ -34,5 +36,12 @@ namespace backend.Controllers
 
 			return Ok(package);
 		}
+	[HttpGet("courier/{courierId}")]
+	public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackagesByCourier(int courierId)
+	{
+		var packages = await _packageService.GetPackagesByCourierIdAsync(courierId);
+		return Ok(packages);
 	}
+	}
+
 	}
