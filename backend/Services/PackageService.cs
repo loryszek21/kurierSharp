@@ -71,12 +71,12 @@ namespace backend.Services
 		public async Task<IEnumerable<PackageDto>> GetPackagesByCourierIdAsync(int courierId)
 		{
 			return await _context.Packages
-		.Where(p => p.CourierId == courierId)
-				   .Include(p => p.Sender).ThenInclude(s => s.Address)
-				   .Include(p => p.Recipient).ThenInclude(r => r.Address)
-				   .Include(p => p.Courier).ThenInclude(c => c.Address)
-				   .Include(p => p.Address)
-				   .Select(p => new PackageDto
+				.Where(p => p.CourierId == courierId)
+				.Include(p => p.Sender).ThenInclude(s => s.Address)
+				.Include(p => p.Recipient).ThenInclude(r => r.Address)
+				.Include(p => p.Courier).ThenInclude(c => c.Address)
+				.Include(p => p.Address)
+				.Select(p => new PackageDto
 				   {
 					   Id = p.Id,
 					   TrackingNumber = p.TrackingNumber,
