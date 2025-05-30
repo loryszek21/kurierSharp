@@ -36,12 +36,22 @@ namespace backend.Controllers
 
 			return Ok(package);
 		}
-	[HttpGet("courier/{courierId}")]
-	public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackagesByCourier(int courierId)
-	{
-		var packages = await _packageService.GetPackagesByCourierIdAsync(courierId);
-		return Ok(packages);
-	}
-	}
+		[HttpGet("courier/{courierId}")]
+		public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackagesByCourier(int courierId)
+		{
+			var packages = await _packageService.GetPackagesByCourierIdAsync(courierId);
+			return Ok(packages);
+		}
 
+	[HttpPut("modify-status")]
+	public async Task<IActionResult> UpdatePackageStatus([FromBody] PackageStatusDto dto)
+	{
+		var result = await _packageService.UpdatePackageStatusAsync(dto);
+		if (!result)
+		{
+			return NotFound($"Package with ID {dto.Id} not found");
+		}
+		return Ok("Update successfully");
+	}
+	}
 	}

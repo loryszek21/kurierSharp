@@ -77,41 +77,51 @@ namespace backend.Services
 				.Include(p => p.Courier).ThenInclude(c => c.Address)
 				.Include(p => p.Address)
 				.Select(p => new PackageDto
-				   {
-					   Id = p.Id,
-					   TrackingNumber = p.TrackingNumber,
-					   WeightKg = p.WeightKg,
-					   Status = p.Status,
-					   CreatedAt = p.CreatedAt,
-					   DeliveredAt = p.DeliveredAt,
-					   Address = new AddressDto
-					   {
-						   Id = p.Address.Id,
-						   Street = p.Address.Street,
-						   City = p.Address.City,
-						   Region = p.Address.Region,
-						   PostalCode = p.Address.PostalCode,
-						   Country = p.Address.Country
-					   },
-					   SenderId = p.SenderId,
-					   Sender = new PersonShortDto
-					   {
-						   Id = p.Sender.Id,
-						   Name = p.Sender.Name,
-						   Surname = p.Sender.Surname,
-						   PhoneNumber = p.Sender.PhoneNumber
-					   },
-					   RecipientId = p.RecipientId,
-					   Recipient = new PersonShortDto
-					   {
-						   Id = p.Recipient.Id,
-						   Name = p.Recipient.Name,
-						   Surname = p.Recipient.Surname,
-						   PhoneNumber = p.Recipient.PhoneNumber
-					   }
-				   })
+				{
+					Id = p.Id,
+					TrackingNumber = p.TrackingNumber,
+					WeightKg = p.WeightKg,
+					Status = p.Status,
+					CreatedAt = p.CreatedAt,
+					DeliveredAt = p.DeliveredAt,
+					Address = new AddressDto
+					{
+						Id = p.Address.Id,
+						Street = p.Address.Street,
+						City = p.Address.City,
+						Region = p.Address.Region,
+						PostalCode = p.Address.PostalCode,
+						Country = p.Address.Country
+					},
+					SenderId = p.SenderId,
+					Sender = new PersonShortDto
+					{
+						Id = p.Sender.Id,
+						Name = p.Sender.Name,
+						Surname = p.Sender.Surname,
+						PhoneNumber = p.Sender.PhoneNumber
+					},
+					RecipientId = p.RecipientId,
+					Recipient = new PersonShortDto
+					{
+						Id = p.Recipient.Id,
+						Name = p.Recipient.Name,
+						Surname = p.Recipient.Surname,
+						PhoneNumber = p.Recipient.PhoneNumber
+					}
+				})
 				   .ToListAsync();
-
+		}
+		public async Task<bool> UpdatePackageStatusAsync(PackageStatusDto package)
+		{
+			var packageFromDb = await _context.Packages.FindAsync(package.Id);
+			if (packageFromDb == null)
+			{
+				return false;
+			}
+			packageFromDb.Status = package.NewStatus;
+			await _context.SaveChangesAsync();
+			return true;
 		}
 	}
 }
