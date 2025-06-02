@@ -25,21 +25,6 @@
 		{
 		}
 
-		public Package(int id, string trackingNumber, double weightKg, PackageStatus status, DateTime createdAt, DateTime? deliveredAt, Address address, int senderId, User sender, int recipientId, User recipient, int? courierId, User? courier)
-		{
-			Id = id;
-			TrackingNumber = trackingNumber;
-			WeightKg = weightKg;
-			Status = status;
-			CreatedAt = createdAt;
-			DeliveredAt = deliveredAt;
-			Address = address;
-			SenderId = senderId;
-			Sender = sender;
-			RecipientId = recipientId;
-			Recipient = recipient;
-			CourierId = courierId;
-			Courier = courier;
-		}
+		
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using backend.DTOs;
 using backend.Models;
 using backend.Services;
+using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,15 +44,25 @@ namespace backend.Controllers
 			return Ok(packages);
 		}
 
-	[HttpPut("modify-status")]
-	public async Task<IActionResult> UpdatePackageStatus([FromBody] PackageStatusDto dto)
-	{
-		var result = await _packageService.UpdatePackageStatusAsync(dto);
-		if (!result)
+		[HttpPut("modify-status")]
+		public async Task<IActionResult> UpdatePackageStatus([FromBody] PackageStatusDto dto)
 		{
-			return NotFound($"Package with ID {dto.Id} not found");
+			var result = await _packageService.UpdatePackageStatusAsync(dto);
+			if (!result)
+			{
+				return NotFound($"Package with ID {dto.Id} not found");
+			}
+			return Ok("Update successfully");
 		}
-		return Ok("Update successfully");
+		[HttpPost]
+		public async Task<ActionResult<Package>> CreatePackage([FromBody] CreatePackageDto dto)
+
+		{
+			var createdPackage = await _packageService.CreatePackageAsync(dto);
+			return CreatedAtAction(nameof(GetPackageById), new
+			{
+				id = createdPackage.Id
+			}, createdPackage);
+		}
 	}
-	}
-	}
+}

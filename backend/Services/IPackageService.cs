@@ -9,5 +9,6 @@ namespace backend.Services
 		Task<Package> GetPackageByIdAsync(int packageId);
 		Task<IEnumerable<PackageDto>> GetPackagesByCourierIdAsync(int courierId);
 		Task<bool> UpdatePackageStatusAsync(PackageStatusDto package);
+		Task<Package> CreatePackageAsync(CreatePackageDto package);
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using backend.DTOs;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace backend.Services
 {
@@ -122,6 +123,33 @@ namespace backend.Services
 			packageFromDb.Status = package.NewStatus;
 			await _context.SaveChangesAsync();
 			return true;
+		}
+		public async Task<Package> CreatePackageAsync(CreatePackageDto dto)
+		{
+			var trackingNumber = Guid.NewGuid().ToString().Substring(0, 10).ToUpper();
+			var address = new Address
+			{
+				Street = dto.Address.Street,
+				City = dto.Address.City,
+				Region = dto.Address.Region,
+				PostalCode = dto.Address.PostalCode,
+				Country = dto.Address.Country,
+			};
+			_context.Addresses.Add(address);
+			var package = new Package
+			{
+				TrackingNumber = trackingNumber,
+				WeightKg = dto.WeightKg,
+				Address = address,
+				SenderId = dto.SenderId,
+				RecipientId = dto.RecipientId,
+				CourierId = dto.CourierId,
+				Status = PackageStatus.Created
+			};
+			_context.Packages.Add(package);
+			await _context.SaveChangesAsync();
+
+			return package;
 		}
 	}
 }
