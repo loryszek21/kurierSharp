@@ -1,5 +1,8 @@
 package com.example.kuriersharp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -7,7 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class Package {
+public class Package  implements Parcelable {
     public int id;
     public String trackingNumber;
     public double weightKg;
@@ -32,6 +35,53 @@ public class Package {
         this.sender = sender;
         this.recipientId = recipientId;
         this.recipient = recipient;
+    }
+    protected Package(Parcel in) {
+        id = in.readInt();
+        trackingNumber = in.readString();
+        weightKg = in.readDouble();
+        status = in.readInt();
+        long createdAtMillis = in.readLong();
+        createdAt = createdAtMillis == -1 ? null : new Date(createdAtMillis);
+        long deliveredAtMillis = in.readLong();
+        deliveredAt = deliveredAtMillis == -1 ? null : new Date(deliveredAtMillis);
+        address = in.readParcelable(Address.class.getClassLoader());
+        senderId = in.readInt();
+        sender = in.readParcelable(Person.class.getClassLoader());
+        recipientId = in.readInt();
+        recipient = in.readParcelable(Person.class.getClassLoader());
+    }
+
+    public static final Creator<Package> CREATOR = new Creator<Package>() {
+        @Override
+        public Package createFromParcel(Parcel in) {
+            return new Package(in);
+        }
+
+        @Override
+        public Package[] newArray(int size) {
+            return new Package[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(trackingNumber);
+        dest.writeDouble(weightKg);
+        dest.writeInt(status);
+        dest.writeLong(createdAt != null ? createdAt.getTime() : -1);
+        dest.writeLong(deliveredAt != null ? deliveredAt.getTime() : -1);
+        dest.writeParcelable(address, flags);
+        dest.writeInt(senderId);
+        dest.writeParcelable(sender, flags);
+        dest.writeInt(recipientId);
+        dest.writeParcelable(recipient, flags);
     }
 
     public int getId() {

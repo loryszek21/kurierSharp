@@ -9,11 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.kuriersharp.AddPhotoActivity;
 import com.example.kuriersharp.R;
 import com.example.kuriersharp.model.Address;
 import com.example.kuriersharp.model.Package;
@@ -170,6 +170,8 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView recipient;
         Button changeStatusButton;
         private PackageAdapter adapter;
+        Button addPhotoButton;
+
 
         public PackageViewHolder(@NonNull View itemView, PackageAdapter adapter) {
             super(itemView);
@@ -185,19 +187,31 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             changeStatusButton = itemView.findViewById(R.id.changeStatusButton);
             changeStatusButton.setOnClickListener(this);
 
+            addPhotoButton = itemView.findViewById(R.id.addPhoto);
+            addPhotoButton.setOnClickListener(this);
+
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
 
-            Log.i("Google Maps","Kliknięto w przycisk google maps ");
-            int position = getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) {
-                Package packageItem = adapter.packages.get(adapter.getItemPosition(position));
-                adapter.openMap(v.getContext(), packageItem.address);
-            }
-        }
+            if (v.getId() == R.id.changeStatusButton) {
+                //Obsługa przycisku zmiany statusu (bez zmian)
+            } else if (v.getId() == R.id.addPhoto) {
+                //Obsługa przycisku dodania zdjęcia
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Package packageItem = adapter.packages.get(adapter.getItemPosition(position));
+                    adapter.openAddPhotoActivity(v.getContext(), packageItem);
+                }
+            } else {
+                //Obsługa kliknięcia na cały element listy (mapa)
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Package packageItem = adapter.packages.get(adapter.getItemPosition(position));
+                    adapter.openMap(v.getContext(), packageItem.address);
+                }}}
     }
 
     public void openMap(Context context, Address address) {
@@ -213,6 +227,11 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //            Toast.makeText("Brak google Maps")
 
         }
+    }
+    public void openAddPhotoActivity(Context context, Package packageItem) {
+        Intent intent = new Intent(context, AddPhotoActivity.class);
+        intent.putExtra("package", packageItem);
+        context.startActivity(intent);
     }
 
     public static class HeaderViewHolder extends RecyclerView.ViewHolder {
