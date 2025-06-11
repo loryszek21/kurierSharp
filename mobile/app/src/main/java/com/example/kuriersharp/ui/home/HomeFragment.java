@@ -83,7 +83,7 @@ public class HomeFragment extends Fragment {
         // Przykładowe dane - ZASTĄP TYMI Z BACKENDU
         List<Package> packages = createExamplePackages();
 
-        PackageAdapter adapter = new PackageAdapter(packages, statusMap);
+        PackageAdapter adapter = new PackageAdapter(getContext(), packages, statusMap); // Przekazujemy kontekst!
         recyclerView.setAdapter(adapter);
 
         return root;

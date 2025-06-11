@@ -1,5 +1,6 @@
 package com.example.kuriersharp.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +20,7 @@ import com.example.kuriersharp.R;
 import com.example.kuriersharp.model.Address;
 import com.example.kuriersharp.model.Package;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,11 +32,20 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private List<Package> packages;
     private Map<Integer, String> statusMap;
     private PackageAdapter adapter;
+    private Context context; // Dodano pole context
 
     public PackageAdapter(List<Package> packages, Map<Integer, String> statusMap) {
+
         this.packages = packages;
         this.statusMap = statusMap;
         this.adapter = this;
+    }
+
+    public PackageAdapter(Context context, List<Package> packages, Map<Integer, String> statusMap) {
+        this.packages = packages;
+        this.statusMap = statusMap;
+        this.adapter = adapter;
+        this.context = context;
     }
 
     @NonNull
@@ -185,12 +197,18 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             sender = itemView.findViewById(R.id.sender);
             recipient = itemView.findViewById(R.id.recipient);
             changeStatusButton = itemView.findViewById(R.id.changeStatusButton);
-            changeStatusButton.setOnClickListener(this);
+//            changeStatusButton.setOnClickListener(this);
 
             addPhotoButton = itemView.findViewById(R.id.addPhoto);
             addPhotoButton.setOnClickListener(this);
 
             itemView.setOnClickListener(this);
+            changeStatusButton.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Package packageItem = adapter.packages.get(adapter.getItemPosition(position));
+                    adapter.showChangeStatusDialog(packageItem);
+                }});
         }
 
         @Override
@@ -241,5 +259,29 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(itemView);
             statusTextView = itemView.findViewById(R.id.status_header);
         }
+    }
+    public void showChangeStatusDialog(Package packageItem) {
+        Map<Integer, String> statusMap = new HashMap<>();
+        statusMap.put(1, "Utworzony");
+        statusMap.put(2, "Odebrany");
+        statusMap.put(3, "W transporcie");
+        statusMap.put(4, "Dostarczony");
+        statusMap.put(5, "Zwrócony");
+
+        String[] statusOptions = statusMap.values().toArray(new String[0]);
+
+        new AlertDialog.Builder(context)
+                .setTitle("Zmień status")
+                .setItems(statusOptions, (dialog, which) -> {
+                    int newStatus = which + 1; //Statusy zaczynają się od 1
+                    updatePackageStatus(packageItem, newStatus);
+                    notifyDataSetChanged(); //Odśwież listę
+                })
+                .show();
+    }
+    private void updatePackageStatus(Package packageItem, int newStatus) {
+        //Tu umieść logikę aktualizacji statusu w bazie danych lub innym miejscu
+        packageItem.status = newStatus; //Tylko dla przykładu, w realnym kodzie powinieneś zapisać to do bazy danych
+        Toast.makeText(context,"Status zmieniony!",Toast.LENGTH_SHORT).show();
     }
 }
