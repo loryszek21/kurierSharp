@@ -1,0 +1,27 @@
+<resources>
+    <!-- Twoje istniejące theme_entries i theme_values -->
+    <string-array name="theme_entries">
+        <item>Jasny</item>
+        <item>Ciemny</item>
+        <item>Domyślny systemowy</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>light</item>
+        <item>dark</item>
+        <item>system</item>
+    </string-array>
+
+    <!-- Dodaj dla języka -->
+    <string-array name="language_entries">
+        <item>Domyślny systemowy</item>
+        <item>English</item>
+        <item>Polski</item>
+        <!-- Dodaj więcej języków jeśli potrzebujesz -->
+    </string-array>
+    <string-array name="language_values">
+        <item>default</item> <!-- Używamy "default" dla języka systemowego -->
+        <item>en</item>
+        <item>pl</item>
+        <!-- Dodaj kody ISO 639-1 dla innych języków -->
+    </string-array>
+</resources>

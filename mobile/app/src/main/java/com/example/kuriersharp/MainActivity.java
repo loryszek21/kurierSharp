@@ -2,11 +2,14 @@ package com.example.kuriersharp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences; // Dodaj ten import
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 
+import com.example.kuriersharp.utils.LocaleHelper; // Importuj
+import com.example.kuriersharp.utils.ThemeHelper;  // Importuj
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
@@ -16,13 +19,10 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager; // Dodaj ten import
 
 import com.example.kuriersharp.databinding.ActivityMainBinding;
 
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -31,7 +31,18 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        // Ustaw język PRZED super.attachBaseContext
+        super.attachBaseContext(LocaleHelper.onAttach(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Zastosuj motyw PRZED super.onCreate() i setContentView()
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String themePreferenceValue = prefs.getString("theme_preference", ThemeHelper.DEFAULT_MODE); // "theme_preference" to klucz z preferences.xml
+        ThemeHelper.applyTheme(themePreferenceValue);
+
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -43,13 +54,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
-                        .setAnchorView(R.id.fab).show();
+                        // .setAnchorView(R.id.fab) // Odkomentuj jeśli masz fab
+                        .show();
             }
         });
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
                 .setOpenableLayout(drawer)
@@ -61,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -77,25 +86,11 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            // Uruchom SettingsActivity
             Intent settingsIntent = new Intent(this, SettingsActivity.class);
             startActivity(settingsIntent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        // Ustaw język przed utworzeniem kontekstu Activity, aby język był poprawny od początku
-        String savedLanguage = newBase.getSharedPreferences("AppSettings", Context.MODE_PRIVATE)
-                .getString("language", "en");
-        Locale locale = new Locale(savedLanguage);
-        Context context = newBase.createConfigurationContext(new Configuration());
-        Configuration config = context.getResources().getConfiguration();
-        config.setLocale(locale);
-        newBase = context.createConfigurationContext(config);
-        super.attachBaseContext(newBase);
     }
 }
