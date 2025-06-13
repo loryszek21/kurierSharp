@@ -2,11 +2,14 @@ services:
   backend:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ASPNETCORE_HTTPS_PORTS=8081
+      # Zamiast ASPNETCORE_HTTP_PORTS, użyj ASPNETCORE_URLS dla większej kontroli
+      - ASPNETCORE_URLS=http://+:8080;
+      # https://+:8081
     ports:
-      - "8080"
-      - "8081"
+      # Jeśli chcesz, aby HTTP było dostępne na porcie 5000 hosta (jak w głównym pliku)
+      # A HTTPS na porcie 5001 hosta
+      - "5000:8080" # HostPort:ContainerPort dla HTTP
+      # - "5001:8081" # HostPort:ContainerPort dla HTTPS
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro

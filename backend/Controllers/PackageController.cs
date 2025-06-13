@@ -4,6 +4,7 @@ using backend.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace backend.Controllers
 {
@@ -64,5 +65,30 @@ namespace backend.Controllers
 				id = createdPackage.Id
 			}, createdPackage);
 		}
-	}
+		[HttpPost("upload-photo")] // Endpoint: /api/Package/upload-photo
+		public IActionResult UploadPhoto([FromBody] PhotoUploadRequestDto photoRequest)
+		{
+			if (photoRequest == null || string.IsNullOrEmpty(photoRequest.PackageId) || string.IsNullOrEmpty(photoRequest.Base64Image))
+			{
+				return BadRequest("Invalid photo upload request. PackageId and Base64Image are required.");
+			}
+
+			// Wypisz informację na konsolę serwera (lub użyj loggera)
+			Console.WriteLine($"Received photo for Package ID: {photoRequest.PackageId}");
+			Console.WriteLine($"Base64 Image Data Length: {photoRequest.Base64Image.Length}");
+			// System.Diagnostics.Debug.WriteLine działa w trybie Debug
+			Debug.WriteLine($"DEBUG: Received photo for Package ID: {photoRequest.PackageId}, Image Length: {photoRequest.Base64Image.Length}");
+
+
+			// TODO: W przyszłości tutaj będzie logika przetwarzania obrazu:
+			// 1. Zdekoduj Base64Image do tablicy bajtów (byte[]).
+			//    byte[] imageBytes = Convert.FromBase64String(photoRequest.Base64Image);
+			// 2. Zapisz obraz na serwerze (np. do pliku, do bazy danych, do Azure Blob Storage itp.).
+			// 3. Powiąż zapisany obraz z paczką o ID = photoRequest.PackageId w bazie danych.
+
+			// Na razie zwracamy prostą odpowiedź
+			return Ok(new { status = "success", message = $"Photo for package {photoRequest.PackageId} received by server." });
+		}
+	
+}
 }
