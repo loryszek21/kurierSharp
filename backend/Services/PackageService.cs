@@ -54,7 +54,15 @@ namespace backend.Services
 						   Name = p.Recipient.Name,
 						   Surname = p.Recipient.Surname,
 						   PhoneNumber = p.Recipient.PhoneNumber
-					   }
+					   },
+
+					Courier = new PersonShortDto
+					{
+						Id = p.Recipient.Id,
+						Name = p.Recipient.Name,
+						Surname = p.Recipient.Surname,
+						PhoneNumber = p.Recipient.PhoneNumber
+					}
 				   })
 				   .ToListAsync();
 		}

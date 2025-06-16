@@ -17,6 +17,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+
     networks:
     - kurier-network
     depends_on:

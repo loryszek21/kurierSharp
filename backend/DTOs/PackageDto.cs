@@ -15,7 +15,8 @@ namespace backend.DTOs
 		public PersonShortDto Sender { get; set; } = null!;
 		public int RecipientId { get; set; }
 		public PersonShortDto Recipient { get; set; } = null!;
-	}
+		public PersonShortDto Courier { get; set; } = null!;
+		}
 
 
 }
